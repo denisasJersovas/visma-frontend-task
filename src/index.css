@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.router-link-exact-active {
+  @apply text-blue;
+}
+.ui-toast-block {
+  @apply fixed top-40 right-5 flex flex-col items-end gap-4 z-50;
+}
+.ui-toast {
+  @apply py-3 px-4 rounded-md text-white max-w-md transition-all duration-500;
+}
+.ui-toast-success {
+  @apply bg-green;
+}
+.ui-toast-error {
+  @apply bg-red;
+}
+.ui-toast-info {
+  @apply bg-gray;
+}
+.up {
+  transform: rotate(-135deg);
+}
+.down {
+  transform: rotate(45deg);
+}
+
+input[type="text"],
+input[type="password"],
+input[type="tel"],
+input[type="number"],
+input[type="email"],
+input[type="date"] {
+  @apply focus:outline-none focus:border-gray focus:ring-0;
+}
+input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
