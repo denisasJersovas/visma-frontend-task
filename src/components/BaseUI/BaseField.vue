@@ -1,10 +1,11 @@
 <template>
-  <div :class="attrsClass">
+  <div :class="attrsClass || 'mb-6'">
     <component
       :is="field"
       :model-value="modelValue"
       :type="type"
       :label="label"
+      :options="options"
       :readonly="readonly"
       @update:model-value="check"
     />
@@ -28,6 +29,7 @@ interface Props {
   modelValue?: string | number | [] | boolean | object;
   label?: string;
   required?: boolean;
+  options?: string[] | number[] | { value: string | number; name: string }[];
   email?: boolean;
   numeric?: boolean;
   minLength?: number;
@@ -36,22 +38,18 @@ interface Props {
   readonly?: boolean;
   onlyLetters?: boolean;
   wordsAllowed?: number;
+  allWordsUppercase?: boolean;
   attrsClass?: string;
 }
 const props = withDefaults(defineProps<Props>(), {
-  attrsClass: "mb-6",
-  modelValue: "",
-  label: "",
-  unique: () => [],
   type: "text",
-  minLength: 5,
-  maxLength: 20,
-  wordsAllowed: 4,
-  onlyLetters: false,
+  modelValue: "",
+  options: () => [],
 });
 
 const emailRegexp =
-  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\]))$/;
+  /* eslint-disable-next-line */
+  /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\]))$/;
 const numericRegexp = /^([0-9]\d*)$/;
 const allowedCharacters = /^(?!!#$%&'*\+-\/=?^_`{|"(),:;<>@\[\]\/)[a-zA-Z\s]+$/;
 const error = ref(false);
@@ -103,8 +101,9 @@ const rules = {
     message: "Only number allowed",
   },
   unique: {
-    check(data: InputDataFormatted, unique: string[]): boolean {
+    check(data: InputDataFormatted, unique?: string[]): boolean {
       return data &&
+        unique &&
         unique.find(
           (x) =>
             x.toLowerCase() === (typeof data === "string" && data.toLowerCase())
@@ -115,23 +114,26 @@ const rules = {
     message: "Should be unique",
   },
   wordsAllowed: {
-    check(data: InputDataFormatted, wordsAllowed: Number) {
-      return data && (data as string).split(" ").length > wordsAllowed
+    check(data: InputDataFormatted, wordsAllowed?: Number) {
+      return data &&
+        wordsAllowed &&
+        (data as string).split(" ").length > wordsAllowed
         ? true
         : false;
     },
     message: `Only ${props.wordsAllowed} words allowed`,
   },
-  allWordsStartsFromUppercase: {
-    check(data: InputDataFormatted) {
-      return (data as string)
-        .split(" ")
-        .some((_, i, arr) => /[a-z]/.test(arr[i][0]));
+  allWordsUppercase: {
+    check(data: InputDataFormatted, allWordsUppercase?: boolean) {
+      return (
+        allWordsUppercase &&
+        (data as string).split(" ").some((_, i, arr) => /[a-z]/.test(arr[i][0]))
+      );
     },
     message: "First letter of word should starts from uppercase",
   },
   onlyLetters: {
-    check(data: InputDataFormatted, onlyLetters: boolean) {
+    check(data: InputDataFormatted, onlyLetters?: boolean) {
       return data && onlyLetters && !allowedCharacters.test(String(data))
         ? true
         : false;
@@ -157,9 +159,10 @@ function check(data: InputData): void {
     rules.email.check(dataFormatted, props.email) ||
     rules.numeric.check(dataFormatted, props.numeric) ||
     rules.unique.check(dataFormatted, props.unique) ||
-    (rules.wordsAllowed.check(dataFormatted, props.wordsAllowed) &&
-      rules.allWordsStartsFromUppercase.check(dataFormatted)) ||
+    rules.wordsAllowed.check(dataFormatted, props.wordsAllowed) ||
+    rules.allWordsUppercase.check(dataFormatted, props.allWordsUppercase) ||
     rules.onlyLetters.check(dataFormatted, props.onlyLetters);
+
   if (rules.required.check(dataFormatted, props.required)) {
     errorMessage.value = rules.required.message;
   } else if (rules.minLength.check(dataFormatted, props.minLength)) {
@@ -174,8 +177,10 @@ function check(data: InputData): void {
     errorMessage.value = rules.unique.message;
   } else if (rules.wordsAllowed.check(dataFormatted, props.wordsAllowed)) {
     errorMessage.value = rules.wordsAllowed.message;
-  } else if (rules.allWordsStartsFromUppercase.check(dataFormatted)) {
-    errorMessage.value = rules.allWordsStartsFromUppercase.message;
+  } else if (
+    rules.allWordsUppercase.check(dataFormatted, props.allWordsUppercase)
+  ) {
+    errorMessage.value = rules.allWordsUppercase.message;
   } else if (rules.onlyLetters.check(dataFormatted, props.onlyLetters)) {
     errorMessage.value = rules.onlyLetters.message;
   } else {

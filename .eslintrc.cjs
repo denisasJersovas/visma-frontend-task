@@ -33,5 +33,6 @@ module.exports = {
   },
   rules: {
     "vue/require-explicit-emits": "off",
+    "vue/require-default-prop": "off",
   },
 };

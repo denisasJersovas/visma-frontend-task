@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { shallowMount } from "@vue/test-utils";
 import BaseButton from "./BaseButton.vue";
 describe("BaseButton", () => {
@@ -11,6 +11,9 @@ describe("BaseButton", () => {
   };
   beforeEach(() => {
     createWrapper();
+  });
+  afterEach(() => {
+    wrapper.unmount();
   });
   it("check if BaseButton.vue component exists", () => {
     expect(wrapper.findComponent(BaseButton).exists()).toBe(true);

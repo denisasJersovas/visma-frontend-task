@@ -11,34 +11,28 @@
       :unique="store.state.coachList"
       only-letters
       :words-allowed="4"
+      all-words-uppercase
       :min-length="3"
       :max-length="64"
     />
     <BaseField
       v-model="email"
       :field="BaseInput"
-      label="Email"
-      email
       readonly
+      label="Email"
     />
-    <BaseSelect
-      v-if="isCoachExists"
-      :is-open="coachSelectState"
-      :item="coachName"
-      :items="store.state.coachList"
-      item-initial-value="Select coach"
-      @click="coachSelectState = !coachSelectState"
-      @mouseleave="coachSelectState = false"
-      @choose-item="chooseCoach"
+
+    <BaseField
+      v-model="coachName"
+      :field="BaseSelect"
+      label="Select Coach"
+      required
+      :options="store.state.coachList"
     />
+
     <BaseButton
       class="py-2.5"
-      :disabled="
-        formErrors ||
-        fullName?.length === 0 ||
-        email?.length === 0 ||
-        coachName?.length === 0
-      "
+      :disabled="disabled"
       @click="sendData"
     >
       Create
@@ -57,12 +51,9 @@ import store from "@/composables/useStore";
 import toast from "@/composables/useToast";
 
 const router = useRouter();
-
 const formErrors = ref(false);
 const fullName = ref("");
 const coachName = ref("");
-
-const coachSelectState = ref(false);
 
 const email = computed(() => {
   if (fullName.value.length >= 3) {
@@ -76,10 +67,13 @@ const email = computed(() => {
     return `${result}@example.com`;
   } else return "";
 });
-const isCoachExists = computed(() => true);
-function chooseCoach(coach: any) {
-  coachName.value = coach;
-}
+const disabled = computed(
+  () =>
+    formErrors.value ||
+    fullName.value?.length === 0 ||
+    email.value?.length === 0 ||
+    coachName.value?.length === 0
+);
 function createCoach(array: any, obj: any) {
   // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
   for (const [__, e] of array.entries()) {

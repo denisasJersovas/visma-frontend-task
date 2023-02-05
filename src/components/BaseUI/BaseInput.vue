@@ -4,11 +4,16 @@
       {{ modelValue || focused ? label : "" }}
     </label>
     <input
-      class="flex h-12 w-full rounded-md border border-light-gray px-3 pt-1 text-sm hover:border-gray"
+      class="flex h-12 w-full rounded-md border-light-gray px-3 pt-1 text-sm"
       :class="
-        ($attrs.class, { 'placeholder-transparent': modelValue || focused })
+        ($attrs.class,
+        {
+          'placeholder-transparent': modelValue || focused,
+          'rounded-md border border-gray ': focused,
+        })
       "
       :value="modelValue"
+      tabindex="0"
       :type="type"
       :placeholder="label"
       :readonly="readonly ? true : false"
@@ -16,6 +21,7 @@
       @input="emitValue(($event.target as HTMLInputElement).value)"
       @blur="setFocus(false)"
       @focus="setFocus(true)"
+      @keydown.esc="setFocus(false)"
     />
   </div>
 </template>
