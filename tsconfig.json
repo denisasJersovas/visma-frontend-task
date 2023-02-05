@@ -11,7 +11,7 @@
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "baseUrl": ".",
-    "types": ["node", "jsdom"],
+    "types": ["node", "jsdom", "vitest/globals"],
     "paths": {
       "@/*": ["src/*"]
     },
