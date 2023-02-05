@@ -1,35 +1,71 @@
 <template>
-  <div :class="attrsClass || 'mb-6'">
+  <div :class="attrsClass">
     <component
       :is="field"
-      :modelValue="modelValue"
-      @update:modelValue="check"
+      :model-value="modelValue"
       :type="type"
       :label="label"
       :readonly="readonly"
+      @update:model-value="check"
     />
-    <span class="error text-sm absolute bottom text-red" v-if="errorMessage">{{ errorMessage }}</span>
+    <span
+      v-if="errorMessage"
+      class="error bottom absolute text-sm text-red"
+    >
+      {{ errorMessage }}
+    </span>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
+type InputData = boolean | string | number | (string | number)[] | DataTransfer;
+type InputDataFormatted = string | (string | number)[];
+
+interface Props {
+  field: {};
+  type?: string;
+  modelValue?: string | number | [] | boolean | object;
+  label?: string;
+  required?: boolean;
+  email?: boolean;
+  numeric?: boolean;
+  minLength?: number;
+  maxLength?: number;
+  unique?: string[];
+  readonly?: boolean;
+  onlyLetters?: boolean;
+  wordsAllowed?: number;
+  attrsClass?: string;
+}
+const props = withDefaults(defineProps<Props>(), {
+  attrsClass: "mb-6",
+  modelValue: "",
+  label: "",
+  unique: () => [],
+  type: "text",
+  minLength: 5,
+  maxLength: 20,
+  wordsAllowed: 4,
+  onlyLetters: false,
+});
 
 const emailRegexp =
-  /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\]))$/;
+  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\]))$/;
 const numericRegexp = /^([0-9]\d*)$/;
 const allowedCharacters = /^(?!!#$%&'*\+-\/=?^_`{|"(),:;<>@\[\]\/)[a-zA-Z\s]+$/;
 const error = ref(false);
 const errorMessage = ref("");
+
 const rules = {
   required: {
-    check(data, required) {
+    check(data: InputDataFormatted, required?: boolean): boolean {
       return required && !data.length ? true : false;
     },
     message: "Please fill this field",
   },
   minLength: {
-    check(data, minLength) {
+    check(data: InputDataFormatted, minLength?: number): boolean {
       if (minLength) {
         return data.length < minLength && data.length ? true : false;
       } else {
@@ -39,7 +75,7 @@ const rules = {
     message: "Too less characters",
   },
   maxLength: {
-    check(data, maxLength) {
+    check(data: InputDataFormatted, maxLength?: number): boolean {
       if (maxLength) {
         return data.length > maxLength && data.length ? true : false;
       } else {
@@ -49,108 +85,68 @@ const rules = {
     message: "Too many characters",
   },
   email: {
-    check(data, email) {
-      return data.length && email && !emailRegexp.test(String(data).toLowerCase()) ? true : false;
+    check(data: InputDataFormatted, email?: boolean): boolean {
+      return data.length &&
+        email &&
+        !emailRegexp.test(String(data).toLowerCase())
+        ? true
+        : false;
     },
     message: "Invalid email format",
   },
   numeric: {
-    check(data, numeric) {
-      return data.length && numeric && !numericRegexp.test(String(data)) ? true : false;
+    check(data: InputDataFormatted, numeric?: boolean): boolean {
+      return data.length && numeric && !numericRegexp.test(String(data))
+        ? true
+        : false;
     },
     message: "Only number allowed",
   },
   unique: {
-    check(data, unique) {
-      return data && unique.includes(data) ? true : false;
+    check(data: InputDataFormatted, unique: string[]): boolean {
+      return data &&
+        unique.find(
+          (x) =>
+            x.toLowerCase() === (typeof data === "string" && data.toLowerCase())
+        )
+        ? true
+        : false;
     },
     message: "Should be unique",
   },
   wordsAllowed: {
-    check(data, wordsAllowed) {
-      return data && data.split(" ").length > wordsAllowed ? true : false;
+    check(data: InputDataFormatted, wordsAllowed: Number) {
+      return data && (data as string).split(" ").length > wordsAllowed
+        ? true
+        : false;
     },
     message: `Only ${props.wordsAllowed} words allowed`,
   },
   allWordsStartsFromUppercase: {
-    check(data) {
-      return data.split(" ").some((_, i, arr) => /[a-z]/.test(arr[i][0]));
+    check(data: InputDataFormatted) {
+      return (data as string)
+        .split(" ")
+        .some((_, i, arr) => /[a-z]/.test(arr[i][0]));
     },
     message: "First letter of word should starts from uppercase",
   },
   onlyLetters: {
-    check(data, onlyLetters) {
-      return data && onlyLetters && !allowedCharacters.test(String(data)) ? true : false;
+    check(data: InputDataFormatted, onlyLetters: boolean) {
+      return data && onlyLetters && !allowedCharacters.test(String(data))
+        ? true
+        : false;
     },
     message: "Only letters allowed",
   },
 };
 
-const props = defineProps({
-  field: {
-    type: Object,
-    default: {},
-  },
-  type: {
-    type: String,
-    required: false,
-  },
-  modelValue: {
-    type: [String, Number, Array, Boolean, Object],
-    required: false,
-  },
-  label: {
-    type: String,
-    required: false,
-  },
-  required: {
-    type: Boolean,
-    required: false,
-  },
-  email: {
-    type: Boolean,
-    required: false,
-  },
-  numeric: {
-    type: Boolean,
-    required: false,
-  },
-  minLength: {
-    type: Number,
-    default: 0,
-    required: false,
-  },
-  maxLength: {
-    type: Number,
-    default: 0,
-    required: false,
-  },
-  unique: {
-    type: Array,
-    default: [],
-  },
-  readonly: {
-    type: Boolean,
-    required: false,
-  },
-  onlyLetters: {
-    type: Boolean,
-    default: false,
-  },
-  wordsAllowed: {
-    type: Number,
-    required: false,
-  },
-  attrsClass: {
-    type: String,
-    required: false,
-  },
-});
 const emit = defineEmits(["update:modelValue"]);
-function check(data) {
-  let dataFormatted = data.replace(/\s+/g, " ").trim();
+function check(data: InputData): void {
+  let dataFormatted = data as InputDataFormatted;
   if (typeof data === "number") {
     dataFormatted = data.toString();
+  } else if (typeof data === "string") {
+    dataFormatted = data.replace(/\s+/g, " ").trim();
   } else if (typeof data === "boolean") {
     dataFormatted = data === false ? "" : data.toString();
   }
@@ -162,7 +158,7 @@ function check(data) {
     rules.numeric.check(dataFormatted, props.numeric) ||
     rules.unique.check(dataFormatted, props.unique) ||
     (rules.wordsAllowed.check(dataFormatted, props.wordsAllowed) &&
-      rules.allWordsStartsFromUppercase.check(dataFormatted, props.wordsAllowed)) ||
+      rules.allWordsStartsFromUppercase.check(dataFormatted)) ||
     rules.onlyLetters.check(dataFormatted, props.onlyLetters);
   if (rules.required.check(dataFormatted, props.required)) {
     errorMessage.value = rules.required.message;
@@ -178,7 +174,7 @@ function check(data) {
     errorMessage.value = rules.unique.message;
   } else if (rules.wordsAllowed.check(dataFormatted, props.wordsAllowed)) {
     errorMessage.value = rules.wordsAllowed.message;
-  } else if (rules.allWordsStartsFromUppercase.check(dataFormatted, props.wordsAllowed)) {
+  } else if (rules.allWordsStartsFromUppercase.check(dataFormatted)) {
     errorMessage.value = rules.allWordsStartsFromUppercase.message;
   } else if (rules.onlyLetters.check(dataFormatted, props.onlyLetters)) {
     errorMessage.value = rules.onlyLetters.message;

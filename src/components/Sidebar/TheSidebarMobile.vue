@@ -7,7 +7,10 @@
     leave-from-class="opacity-100"
     leave-to-class="opacity-0"
   >
-    <TheSidebarMobileOverlay @click="$emit('close')" v-show="props.isOpen" />
+    <TheSidebarMobileOverlay
+      v-show="props.isOpen"
+      @click="$emit('close')"
+    />
   </transition>
   <transition
     enter-active-class="transition ease-in-out duration-200 transform"
@@ -20,12 +23,17 @@
     <aside
       v-show="props.isOpen"
       ref="mobileSidebar"
-      @keydown.esc="$emit('close')"
       tabindex="-1"
-      class="w-64 h-screen overflow-auto bg-white fixed z-40 outline-none"
+      class="fixed z-40 h-screen w-64 overflow-auto bg-white outline-none"
+      @keydown.esc="$emit('close')"
     >
-      <section class="flex items-center py-5 px-5 lg:px-10 sticky top-0 bg-blue text-white">
-        <button @click="$emit('close')" class="mr-6 focus:outline-none">
+      <section
+        class="sticky top-0 flex items-center bg-blue py-5 px-5 text-white lg:px-10"
+      >
+        <button
+          class="mr-6 focus:outline-none"
+          @click="$emit('close')"
+        >
           <BaseIcon name="menu" />
         </button>
       </section>
@@ -34,7 +42,7 @@
   </transition>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, nextTick, watchEffect } from "vue";
 import BaseIcon from "../BaseUI/BaseIcon.vue";
 import TheSidebarMobileOverlay from "./TheSidebarMobileOverlay.vue";
@@ -42,7 +50,7 @@ import SidebarContent from "./SidebarContent.vue";
 const props = defineProps({
   isOpen: Boolean,
 });
-const mobileSidebar = ref(null);
+const mobileSidebar = ref(null) as any;
 
 defineEmits(["close"]);
 

@@ -1,19 +1,25 @@
 <template>
   <main class="bg-light">
-    <TheHeader class="fixed w-full z-30" @toggle-sidebar="toggleSidebar" />
+    <TheHeader
+      class="fixed z-30 w-full"
+      @toggle-sidebar="toggleSidebar"
+    />
     <TheSidebar v-if="isSidebarOpen" />
-    <TheSidebarMobile :is-open="isMobileSidebarOpen" @close="closeMobileSidebar" />
-    <div class="w-screen min-h-screen pt-20 pb-10">
+    <TheSidebarMobile
+      :is-open="isMobileSidebarOpen"
+      @close="closeMobileSidebar"
+    />
+    <div class="min-h-screen w-screen pt-20 pb-10">
       <RouterView :class="{ 'sm:ml-64': isSidebarOpen }" />
     </div>
   </main>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted, watchEffect } from "vue";
-import TheHeader from "./components/TheHeader.vue";
-import TheSidebar from "./components/Sidebar/TheSidebar.vue";
-import TheSidebarMobile from "./components/Sidebar/TheSidebarMobile.vue";
+import TheHeader from "@/components/TheHeader.vue";
+import TheSidebar from "@/components/Sidebar/TheSidebar.vue";
+import TheSidebarMobile from "@/components/Sidebar/TheSidebarMobile.vue";
 import store from "@/composables/useStore";
 import { useRoute } from "vue-router";
 
@@ -21,7 +27,7 @@ const route = useRoute();
 const isMobileSidebarOpen = ref(false);
 const isSidebarOpen = ref(true);
 watchEffect(() => {
-  if (route.path) {
+  if (route?.path) {
     isMobileSidebarOpen.value = false;
   }
 });
@@ -36,7 +42,10 @@ onMounted(() => {
     : localStorage.setItem("coachList", JSON.stringify(store.state.coachList));
   storageCoachNodeList
     ? (store.state.coachNodeList = JSON.parse(storageCoachNodeList))
-    : localStorage.setItem("coachNodeList", JSON.stringify(store.state.coachNodeList));
+    : localStorage.setItem(
+        "coachNodeList",
+        JSON.stringify(store.state.coachNodeList)
+      );
 });
 
 function onResize() {

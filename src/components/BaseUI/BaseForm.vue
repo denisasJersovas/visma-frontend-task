@@ -1,10 +1,13 @@
 <template>
-  <form @submit.prevent ref="form">
-    <slot></slot>
+  <form
+    ref="form"
+    @submit.prevent
+  >
+    <slot />
   </form>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onMounted, onUpdated, ref } from "vue";
 const errorsCount = ref(0);
 const form = ref();
@@ -12,7 +15,7 @@ const emit = defineEmits(["errors"]);
 function formValidate() {
   errorsCount.value = 0;
   if (form.value) {
-    form.value.querySelectorAll(".error").forEach((element) => {
+    form.value.querySelectorAll(".error").forEach((element: any) => {
       if (element) {
         errorsCount.value++;
       }

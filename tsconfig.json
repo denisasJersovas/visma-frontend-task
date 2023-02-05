@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "strict": true,
+    "importHelpers": true,
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "baseUrl": ".",
+    "types": ["node", "jsdom"],
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
+  },
+  "include": [
+    "src/**/*.ts",
+    "tests/**/*.ts",
+    "env.d.ts",
+    "src/**/*",
+    "src/**/*.vue",
+    "shims-vue.d.ts",
+    "src/locales/*.json",
+    "src/tailwind.css",
+    "vite.config.*",
+    "vitest.config.*",
+    "cypress.config.*"
+  ],
+  "exclude": ["node_modules", "src/**/__tests__/*"]
+}

@@ -1,9 +1,12 @@
 <template>
-  <BaseForm @errors="formValidate" class="w-full px-5 lg:px-10 pt-5 sm:w-[600px]">
+  <BaseForm
+    class="w-full px-5 pt-5 sm:w-[600px] lg:px-10"
+    @errors="formValidate"
+  >
     <BaseField
+      v-model="fullName"
       :field="BaseInput"
       label="Full Name"
-      v-model="fullName"
       required
       :unique="store.state.coachList"
       only-letters
@@ -11,26 +14,38 @@
       :min-length="3"
       :max-length="64"
     />
-    <BaseField :field="BaseInput" label="Email" v-model="email" email readonly />
+    <BaseField
+      v-model="email"
+      :field="BaseInput"
+      label="Email"
+      email
+      readonly
+    />
     <BaseSelect
       v-if="isCoachExists"
-      @click="coachSelectState = !coachSelectState"
-      @mouseleave="coachSelectState = false"
-      :isOpen="coachSelectState"
+      :is-open="coachSelectState"
       :item="coachName"
       :items="store.state.coachList"
-      itemInitialValue="Select coach"
+      item-initial-value="Select coach"
+      @click="coachSelectState = !coachSelectState"
+      @mouseleave="coachSelectState = false"
       @choose-item="chooseCoach"
     />
     <BaseButton
       class="py-2.5"
-      :disabled="formErrors || fullName?.length === 0 || email?.length === 0 || coachName?.length === 0"
+      :disabled="
+        formErrors ||
+        fullName?.length === 0 ||
+        email?.length === 0 ||
+        coachName?.length === 0
+      "
       @click="sendData"
-      >Create</BaseButton
     >
+      Create
+    </BaseButton>
   </BaseForm>
 </template>
-<script setup>
+<script lang="ts" setup>
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import BaseForm from "@/components/BaseUI/BaseForm.vue";
@@ -54,19 +69,25 @@ const email = computed(() => {
     const arrFullName = fullName.value.split(" ");
     let result = "";
     arrFullName.forEach((element, index) =>
-      index > 0 ? (result += element ? `.${element.toLowerCase()}` : "") : (result = element.toLowerCase())
+      index > 0
+        ? (result += element ? `.${element.toLowerCase()}` : "")
+        : (result = element.toLowerCase())
     );
     return `${result}@example.com`;
-  }
+  } else return "";
 });
 const isCoachExists = computed(() => true);
-function chooseCoach(coach) {
+function chooseCoach(coach: any) {
   coachName.value = coach;
 }
-function createCoach(array, obj) {
-  for (const [i, e] of array.entries()) {
+function createCoach(array: any, obj: any) {
+  // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+  for (const [__, e] of array.entries()) {
     if (e.coach.fullName === obj.coachName) {
-      e.child.push({ coach: { fullName: obj.fullName, email: obj.email }, child: [] });
+      e.child.push({
+        coach: { fullName: obj.fullName, email: obj.email },
+        child: [],
+      });
     }
     if (e.child.length > 0) {
       createCoach(e.child, obj);
@@ -82,13 +103,16 @@ function sendData() {
       email: email.value,
       coachName: coachName.value,
     });
-    localStorage.setItem("coachNodeList", JSON.stringify(store.state.coachNodeList));
-    router.push(`/coaches`);
+    localStorage.setItem(
+      "coachNodeList",
+      JSON.stringify(store.state.coachNodeList)
+    );
+    router.push(`/coaches-view`);
   } else {
     toast.error("Max coach number is 2000");
   }
 }
-function formValidate(result) {
+function formValidate(result: any) {
   formErrors.value = result;
 }
 </script>

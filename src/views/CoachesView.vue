@@ -1,7 +1,7 @@
 <template>
   <div class="flex overflow-x-auto">
     <ul v-if="store.state.coachNodeList.length > 0">
-      <BaseTree
+      <CoachTree
         v-for="(node, index) in store.state.coachNodeList"
         :key="node.coach.fullName"
         :node="node"
@@ -13,19 +13,24 @@
     </ul>
     <BaseModal
       v-if="isDeleteModalOpen === true"
+      with-close-button
+      class="flex max-w-[600px] items-center justify-center"
       @close="closeDeleteModal"
-      withCloseButton
-      class="max-w-[600px] flex justify-center items-center"
     >
-      <p class="text-lg mb-3">Do you want to delete coach ?</p>
-      <BaseButton class="py-2.5" @click="deleteCoach(currentFullName)"> Yes </BaseButton>
+      <p class="mb-3 text-lg">Do you want to delete coach ?</p>
+      <BaseButton
+        class="py-2.5"
+        @click="deleteCoach(currentFullName)"
+      >
+        Yes
+      </BaseButton>
     </BaseModal>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
-import BaseTree from "@/components/BaseUI/BaseTree.vue";
+import CoachTree from "@/components/CoachTree.vue";
 import BaseModal from "@/components/BaseUI/BaseModal.vue";
 import BaseButton from "@/components/BaseUI/BaseButton.vue";
 
@@ -33,13 +38,17 @@ import store from "@/composables/useStore";
 import toast from "@/composables/useToast";
 const isDeleteModalOpen = ref(false);
 const currentFullName = ref("");
-function removeRecursively(array, fullName) {
+function removeRecursively(array: any, fullName: any) {
   for (const [i, e] of array.entries()) {
     if (e.coach.fullName === fullName) {
       if (e.child.length > 0) {
-        e.child.forEach((_, index, childArr) => {
+        e.child.forEach((_: any, index: any, childArr: any) => {
           if (index === 0) {
-            for (let childInd = 1; childInd <= childArr.length - 1; childInd++) {
+            for (
+              let childInd = 1;
+              childInd <= childArr.length - 1;
+              childInd++
+            ) {
               e.child[index].child.push(childArr[childInd]);
             }
           }
@@ -55,7 +64,7 @@ function removeRecursively(array, fullName) {
   }
   return array;
 }
-function openDeleteModal(fullName) {
+function openDeleteModal(fullName: any) {
   isDeleteModalOpen.value = true;
   currentFullName.value = fullName;
 }
@@ -63,19 +72,22 @@ function closeDeleteModal() {
   isDeleteModalOpen.value = false;
   currentFullName.value = "";
 }
-function deleteCoach(fullName) {
+function deleteCoach(fullName: any) {
   if (store.state.coachList.length > 1) {
-    store.state.coachList = store.state.coachList.filter(x => x != fullName);
+    store.state.coachList = store.state.coachList.filter((x) => x != fullName);
     localStorage.setItem("coachList", JSON.stringify(store.state.coachList));
     removeRecursively(store.state.coachNodeList, fullName);
-    localStorage.setItem("coachNodeList", JSON.stringify(store.state.coachNodeList));
+    localStorage.setItem(
+      "coachNodeList",
+      JSON.stringify(store.state.coachNodeList)
+    );
     isDeleteModalOpen.value = false;
     toast.success("Succesfully deleted");
   } else {
     toast.error("Parent elemenet should be provided");
   }
 }
-function changeRecursively(array, payload) {
+function changeRecursively(array: any, payload: any) {
   for (const [i, e] of array.entries()) {
     if (i === payload.index && e.coach.fullName === payload.fullName) {
       const element = array.splice(payload.index, 1)[0];
@@ -88,9 +100,12 @@ function changeRecursively(array, payload) {
 
   return array;
 }
-function changePosition(payload) {
+function changePosition(payload: any) {
   changeRecursively(store.state.coachNodeList, payload);
-  localStorage.setItem("coachNodeList", JSON.stringify(store.state.coachNodeList));
+  localStorage.setItem(
+    "coachNodeList",
+    JSON.stringify(store.state.coachNodeList)
+  );
   toast.success("Position changed");
 }
 </script>

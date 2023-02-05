@@ -1,7 +1,10 @@
 <template>
   <button
-    class="bg-blue hover:opacity-50 rounded-md text-white text-sm font-medium tracking-wider px-3 focus:outline-none"
-    :class="[$attrs.class, disabled ? 'opacity-50 cursor-not-allowed' : 'opacity-100']"
+    class="rounded-md bg-blue px-3 text-sm font-medium tracking-wider text-white hover:opacity-50 focus:outline-none"
+    :class="[
+      $attrs.class,
+      disabled ? 'cursor-not-allowed opacity-50' : 'opacity-100',
+    ]"
     :disabled="disabled"
     @click="emit('click')"
   >
@@ -9,7 +12,7 @@
   </button>
 </template>
 
-<script setup>
+<script setup lang="ts">
 defineProps({
   disabled: {
     type: Boolean,

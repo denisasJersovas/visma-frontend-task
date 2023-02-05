@@ -1,9 +1,11 @@
 <template>
-  <aside class="w-64 h-screen overflow-auto fixed top-0 pt-20 pb-10 bg-white z-20 shadow">
+  <aside
+    class="fixed top-0 z-20 h-screen w-64 overflow-auto bg-white pt-20 pb-10 shadow"
+  >
     <SidebarContent />
   </aside>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import SidebarContent from "./SidebarContent.vue";
 </script>

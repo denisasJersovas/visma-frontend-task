@@ -6,9 +6,9 @@ const routes = [
     redirect: "/new-coach",
   },
   {
-    path: "/coaches",
-    name: "coaches",
-    component: () => import("../views/Coaches.vue"),
+    path: "/coaches-view",
+    name: "coaches view",
+    component: () => import("../views/CoachesView.vue"),
   },
   {
     path: "/new-coach",
