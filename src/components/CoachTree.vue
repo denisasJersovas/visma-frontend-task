@@ -103,20 +103,13 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import BaseIcon from "@/components/BaseUI/BaseIcon.vue";
+import { CoachTreeNode } from "@/interfaces";
 interface CoachTree {
   node: CoachTreeNode;
   owner: CoachTreeNode;
   parent?: string;
   currentIndex: number;
   maxIndex?: number;
-}
-interface CoachTreeNode {
-  coach: Coach;
-  child: any;
-}
-interface Coach {
-  fullName: string;
-  email: string;
 }
 const props = defineProps<CoachTree>();
 const hasChild = computed(

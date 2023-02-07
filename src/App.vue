@@ -20,8 +20,10 @@ import { ref, onMounted, watchEffect } from "vue";
 import TheHeader from "@/components/TheHeader.vue";
 import TheSidebar from "@/components/Sidebar/TheSidebar.vue";
 import TheSidebarMobile from "@/components/Sidebar/TheSidebarMobile.vue";
-import store from "@/composables/useStore";
 import { useRoute } from "vue-router";
+
+import { useCoachStore } from "@/stores/coach";
+const store = useCoachStore();
 
 const route = useRoute();
 const isMobileSidebarOpen = ref(false);
@@ -38,13 +40,13 @@ onMounted(() => {
   const storageCoachNodeList = localStorage.getItem("coachNodeList");
 
   storageCoachList
-    ? (store.state.coachList = JSON.parse(storageCoachList))
-    : localStorage.setItem("coachList", JSON.stringify(store.state.coachList));
+    ? (store.coachList = JSON.parse(storageCoachList))
+    : localStorage.setItem("coachList", JSON.stringify(store.coachList));
   storageCoachNodeList
-    ? (store.state.coachNodeList = JSON.parse(storageCoachNodeList))
+    ? (store.coachNodeList = JSON.parse(storageCoachNodeList))
     : localStorage.setItem(
         "coachNodeList",
-        JSON.stringify(store.state.coachNodeList)
+        JSON.stringify(store.coachNodeList)
       );
 });
 
