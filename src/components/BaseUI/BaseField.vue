@@ -11,7 +11,7 @@
     />
     <span
       v-if="errorMessage"
-      class="absolute text-sm text-red"
+      class="error absolute text-sm text-red"
     >
       {{ errorMessage }}
     </span>
