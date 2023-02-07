@@ -58,7 +58,9 @@ import BaseButton from "@/components/BaseUI/BaseButton.vue";
 import BaseSelect from "@/components/BaseUI/BaseSelect.vue";
 import { useCoachStore } from "@/stores/coach";
 import { NewCoach } from "@/interfaces";
+import toast from "@/composables/useToast";
 import router from "@/router";
+
 const store = useCoachStore();
 const formErrors = ref(false);
 const fullName = ref("");
@@ -79,9 +81,11 @@ const email = computed(() =>
     : ""
 );
 function createCoach(formData: NewCoach) {
-  const res = store.createCoach(formData);
-  if (res) {
+  if (store.coachList.length < 2000) {
+    store.createCoach(formData);
     router.push("/coaches-view");
+  } else {
+    toast.error("Max coach number is 2000");
   }
 }
 function formValidate(result: boolean) {

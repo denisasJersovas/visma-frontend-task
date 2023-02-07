@@ -34,6 +34,8 @@ import CoachTree from "@/components/CoachTree.vue";
 import BaseModal from "@/components/BaseUI/BaseModal.vue";
 import BaseButton from "@/components/BaseUI/BaseButton.vue";
 import { useCoachStore } from "@/stores/coach";
+import toast from "@/composables/useToast";
+
 const store = useCoachStore();
 
 const isDeleteModalOpen = ref(false);
@@ -48,11 +50,17 @@ function closeDeleteModal() {
   currentFullName.value = "";
 }
 function deleteCoach(fullName: string) {
-  store.deleteCoach(fullName);
-  isDeleteModalOpen.value = false;
+  if (store.coachList.length > 1) {
+    store.deleteCoach(fullName);
+    isDeleteModalOpen.value = false;
+    toast.success("Succesfully deleted");
+  } else {
+    toast.error("Parent elemenet should be provided");
+  }
 }
 
 function changeCoachPosition(payload: any) {
   store.changeCoachPosition(payload);
+  toast.success("Position changed");
 }
 </script>

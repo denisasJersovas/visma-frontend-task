@@ -1,22 +1,22 @@
-import { createPinia, setActivePinia } from "pinia";
-import { beforeEach, afterEach, describe, expect, it /* vi */ } from "vitest";
-import { mount } from "@vue/test-utils";
+import { beforeEach, afterEach, describe, expect, it } from "vitest";
+import { shallowMount } from "@vue/test-utils";
+import { createTestingPinia } from "@pinia/testing";
+import { useCoachStore } from "@/stores/coach";
+
 import router from "@/router";
-// import { useCoachStore } from "@/stores/coach";
 
 import NewCoach from "../NewCoach.vue";
 describe("CoachTree", () => {
   let wrapper;
 
   const createWrapper = () => {
-    wrapper = mount(NewCoach, {
+    wrapper = shallowMount(NewCoach, {
       global: {
-        plugins: [router],
+        plugins: [router, createTestingPinia()],
       },
     });
   };
   beforeEach(() => {
-    setActivePinia(createPinia());
     createWrapper();
   });
   afterEach(() => {
@@ -39,7 +39,25 @@ describe("CoachTree", () => {
       email: "test@gmail.com",
       coachName: "Penelope Randi",
     });
-    expect(push).toHaveBeenCalledOnce();
     expect(push).toHaveBeenCalledWith("/coaches-view");
   });
+  it.each`
+    length  | calledTimes
+    ${10}   | ${1}
+    ${2000} | ${0}
+  `(
+    "when coaching tree view length is $length function is called $calledTimes",
+    async ({ length, calledTimes }) => {
+      const store = useCoachStore();
+      const arr = Array.from({ length: length - 1 }, (_, i) => i.toString());
+      store.coachList = [...store.coachList, ...arr];
+      const push = vi.spyOn(router, "push");
+      wrapper.vm.createCoach({
+        fullName: "Test",
+        email: "test@gmail.com",
+        coachName: "Penelope Randi",
+      });
+      expect(push).toHaveBeenCalledTimes(calledTimes);
+    }
+  );
 });
