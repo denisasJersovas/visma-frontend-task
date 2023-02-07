@@ -11,7 +11,7 @@
     />
     <span
       v-if="errorMessage"
-      class="error bottom absolute text-sm text-red"
+      class="absolute text-sm text-red"
     >
       {{ errorMessage }}
     </span>
@@ -44,7 +44,6 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   type: "text",
   modelValue: "",
-  options: () => [],
 });
 
 const emailRegexp =
