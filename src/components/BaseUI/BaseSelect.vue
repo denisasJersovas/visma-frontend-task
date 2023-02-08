@@ -19,13 +19,13 @@
 
     <ul
       v-show="isShowOptions"
-      class="mt-2 rounded-md bg-white px-2 py-2"
+      class="mt-2 max-h-[300px] overflow-auto rounded-md bg-white px-2 py-2"
     >
       <li
         v-for="(option, index) in optionsComputed"
         :key="`option${index}`"
         :ref="setOptionElementRef"
-        class="flex cursor-pointer justify-between text-sm"
+        class="flex cursor-pointer items-center justify-between text-sm hover:bg-light"
         :class="{
           'font-bold': option.name === currentOption.name,
         }"
@@ -37,10 +37,10 @@
         @keydown.enter="setOption(option)"
         @keydown.esc="hideOptions"
       >
-        <span class="mb-1">{{ option.name }}</span>
+        <span>{{ option.name }}</span>
         <BaseIcon
           v-if="option.name === currentOption.name"
-          class="h-4 w-4 cursor-pointer text-gray"
+          class="h-4 w-4 cursor-pointer text-gray hover:text-blue"
           name="x"
           @click.stop="removeOption"
         />
