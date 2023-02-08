@@ -19,13 +19,13 @@
 
     <ul
       v-show="isShowOptions"
-      class="mt-2 max-h-[300px] overflow-auto rounded-md bg-white px-2 py-2"
+      class="mt-2 max-h-[300px] overflow-auto rounded-md bg-white"
     >
       <li
         v-for="(option, index) in optionsComputed"
         :key="`option${index}`"
         :ref="setOptionElementRef"
-        class="flex cursor-pointer items-center justify-between text-sm hover:bg-light"
+        class="flex cursor-pointer items-center justify-between px-2 py-1 text-sm hover:bg-light"
         :class="{
           'font-bold': option.name === currentOption.name,
         }"
