@@ -2,9 +2,11 @@
   <div :class="attrsClass || 'mb-6'">
     <component
       :is="field"
+      ref="input"
       :model-value="modelValue"
       :type="type"
       :label="label"
+      :data-testid="fieldType"
       :options="options"
       :readonly="readonly"
       @update:model-value="check"
@@ -19,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 type InputData = boolean | string | number | (string | number)[] | DataTransfer;
 type InputDataFormatted = string | (string | number)[];
 
@@ -45,6 +47,7 @@ const props = withDefaults(defineProps<Props>(), {
   type: "text",
   modelValue: "",
 });
+const input = ref();
 
 const emailRegexp =
   /* eslint-disable-next-line */
@@ -140,7 +143,7 @@ const rules = {
     message: "Only letters allowed",
   },
 };
-
+const fieldType = computed(() => input.value?.fieldType);
 const emit = defineEmits(["update:modelValue"]);
 function check(data: InputData): void {
   let dataFormatted = data as InputDataFormatted;
